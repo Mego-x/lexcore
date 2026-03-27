@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LexCore — AI Agents for Legal Professionals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink: #0e0e0f;
+  --ink-mid: #1a1a1e;
+  --ink-light: #252529;
+  --graphite: #36363c;
+  --smoke: #5a5a65;
+  --ash: #8a8a96;
+  --fog: #b8b8c4;
+  --cloud: #dcdce8;
+  --paper: #f4f3ef;
+  --white: #fafaf8;
+  --gold: #b8952a;
+  --gold-light: #d4af4a;
+  --gold-pale: #f0e4b8;
+  --gold-glow: rgba(184,149,42,0.12);
+  --accent: #1a3a5c;
+  --accent-mid: #2a5a8c;
+  --accent-light: #4a7aac;
+  --success: #2a7a4a;
+  --border: rgba(184,149,42,0.12);
+  --border-strong: rgba(184,149,42,0.25);
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --shadow: 0 4px 24px rgba(14,14,15,0.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--fog);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--graphite); border-radius: 3px; }
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,14,15,0.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+}
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo-mark {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--gold);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.logo-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+.logo-name span { color: var(--gold-light); }
+.logo-sub {
+  font-size: 10px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--smoke);
+  margin-top: -2px;
+}
+nav { display: flex; gap: 4px; align-items: center; }
+nav a {
+  color: var(--ash); text-decoration: none;
+  padding: 7px 16px; border-radius: 6px;
+  font-size: 14px; font-weight: 400;
+  transition: all 0.2s;
+}
+nav a:hover { color: var(--fog); background: rgba(255,255,255,0.04); }
+.nav-cta {
+  background: var(--gold) !important;
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+  border-radius: 7px !important;
+  padding: 8px 20px !important;
+  transition: all 0.2s !important;
+}
+.nav-cta:hover { background: var(--gold-light) !important; transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 110px 48px 90px;
+  overflow: hidden;
+}
+.hero-texture {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 700px 400px at 70% 50%, rgba(184,149,42,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 600px at 10% 80%, rgba(26,58,92,0.12) 0%, transparent 60%),
+    linear-gradient(180deg, var(--ink-mid) 0%, var(--ink) 100%);
+}
+.hero-lines {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 79px,
+    rgba(184,149,42,0.04) 79px, rgba(184,149,42,0.04) 80px
+  );
+  mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 30%, transparent 100%);
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.hero-left {}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold-light);
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block; width: 28px; height: 1px;
+  background: var(--gold);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 4.5vw, 64px);
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 22px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+.hero-desc {
+  font-size: 16px; color: var(--ash);
+  line-height: 1.75; max-width: 460px;
+  margin-bottom: 36px;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-gold {
+  background: var(--gold);
+  color: var(--ink);
+  border: none; cursor: pointer;
+  padding: 13px 28px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(184,149,42,0.3); }
+.btn-ghost {
+  background: transparent;
+  color: var(--fog);
+  border: 1px solid var(--border-strong);
+  padding: 13px 28px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 400;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold-light); }
+.hero-right {}
+.hero-card-stack {
+  position: relative; height: 340px;
+}
+.hero-stat-card {
+  position: absolute;
+  background: var(--ink-light);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  min-width: 200px;
+}
+.hero-stat-card:nth-child(1) { top: 0; left: 0; transform: rotate(-2deg); }
+.hero-stat-card:nth-child(2) { top: 60px; left: 120px; z-index: 2; transform: rotate(1deg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.hero-stat-card:nth-child(3) { top: 160px; left: 20px; transform: rotate(-1deg); }
+.stat-card-icon { font-size: 24px; margin-bottom: 10px; }
+.stat-card-val {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 600;
+  color: var(--white);
+}
+.stat-card-val span { color: var(--gold-light); }
+.stat-card-label { font-size: 12px; color: var(--smoke); margin-top: 2px; }
+.stat-card-bar {
+  height: 3px; background: var(--ink-mid);
+  border-radius: 2px; margin-top: 12px; overflow: hidden;
+}
+.stat-card-fill {
+  height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 48px;
+  display: flex; align-items: center; justify-content: center; gap: 48px;
+  background: rgba(255,255,255,0.015);
+  flex-wrap: wrap;
+}
+.trust-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--smoke);
+}
+.trust-item strong { color: var(--fog); font-weight: 500; }
+.trust-dot { color: var(--gold); font-size: 16px; }
+
+/* ── AGENTS SECTION ── */
+.agents-section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 80px 48px;
+}
+.section-header { margin-bottom: 48px; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.section-eyebrow::after { content: ''; flex: 0 0 28px; height: 1px; background: var(--gold); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: 40px; font-weight: 500;
+  color: var(--white); line-height: 1.15;
+}
+.section-title em { font-style: italic; color: var(--gold-light); }
+.section-sub { font-size: 15px; color: var(--ash); margin-top: 10px; max-width: 520px; }
+
+/* ── AGENT CARDS ── */
+.agents-list { display: flex; flex-direction: column; gap: 2px; }
+.agent-row {
+  background: var(--ink-mid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.22s;
+  margin-bottom: 16px;
+}
+.agent-row:hover { border-color: var(--border-strong); }
+.agent-row.expanded { border-color: var(--gold); }
+.agent-header {
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto;
+  gap: 20px; align-items: center;
+  padding: 24px 28px;
+  cursor: pointer;
+  user-select: none;
+}
+.agent-num {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--smoke);
+  text-align: center;
+}
+.agent-num-big {
+  font-family: var(--font-display);
+  font-size: 28px; color: var(--graphite);
+  font-weight: 600; line-height: 1;
+}
+.agent-info {}
+.agent-name {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 500;
+  color: var(--white); margin-bottom: 4px;
+}
+.agent-tagline { font-size: 13px; color: var(--ash); }
+.agent-price-wrap { text-align: right; }
+.agent-price {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 600;
+  color: var(--gold-light);
+}
+.agent-price-note { font-size: 11px; color: var(--smoke); }
+.agent-toggle {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ash); font-size: 14px;
+  transition: all 0.22s;
+  flex-shrink: 0;
+}
+.agent-row.expanded .agent-toggle {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+  transform: rotate(45deg);
+}
+.agent-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 0;
+}
+.agent-row.expanded .agent-body { display: block; }
+.agent-body-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.agent-desc-col {
+  padding: 28px 32px;
+  border-right: 1px solid var(--border);
+}
+.agent-demo-col {
+  padding: 28px 32px;
+  display: flex; flex-direction: column;
+}
+.col-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 16px;
+}
+.agent-desc-text { font-size: 14px; color: var(--ash); line-height: 1.75; margin-bottom: 20px; }
+.agent-caps { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+.cap {
+  background: rgba(184,149,42,0.08);
+  border: 1px solid rgba(184,149,42,0.18);
+  color: var(--gold-light);
+  font-size: 11px; font-weight: 500;
+  padding: 4px 11px; border-radius: 20px;
+}
+.agent-buy-btn {
+  background: var(--gold);
+  color: var(--ink);
+  border: none; cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 600;
+  transition: all 0.2s;
+  width: fit-content;
+  display: flex; align-items: center; gap: 8px;
+}
+.agent-buy-btn:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,149,42,0.3); }
+
+/* ── DEMO CHAT ── */
+.demo-chat {
+  flex: 1;
+  display: flex; flex-direction: column;
+  background: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-height: 300px;
+}
+.demo-chat-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.02);
+}
+.demo-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+.demo-chat-title { font-size: 11px; color: var(--smoke); font-weight: 500; letter-spacing: 0.5px; }
+.demo-messages {
+  flex: 1; overflow-y: auto;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 180px; max-height: 240px;
+}
+.demo-messages::-webkit-scrollbar { width: 3px; }
+.demo-messages::-webkit-scrollbar-thumb { background: var(--graphite); }
+.msg {
+  max-width: 88%;
+  padding: 9px 13px;
+  border-radius: 10px;
+  font-size: 13px; line-height: 1.55;
+}
+.msg-user {
+  background: var(--accent);
+  color: var(--cloud);
+  align-self: flex-end;
+  border-bottom-right-radius: 3px;
+}
+.msg-agent {
+  background: var(--ink-light);
+  border: 1px solid var(--border);
+  color: var(--fog);
+  align-self: flex-start;
+  border-bottom-left-radius: 3px;
+}
+.msg-typing {
+  display: inline-flex; gap: 4px; align-items: center;
+  padding: 12px 14px;
+}
+.typing-dot {
+  width: 5px; height: 5px;
+  background: var(--ash); border-radius: 50%;
+  animation: bounce 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+.demo-input-row {
+  display: flex; gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+}
+.demo-input {
+  flex: 1;
+  background: var(--ink-light);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 13px; outline: none;
+  transition: border-color 0.18s;
+}
+.demo-input:focus { border-color: var(--gold); }
+.demo-input::placeholder { color: var(--smoke); }
+.demo-send {
+  background: var(--gold);
+  border: none; color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body);
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.demo-send:hover { background: var(--gold-light); }
+.demo-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.demo-prompts {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding: 8px 12px 0;
+}
+.demo-prompt-btn {
+  background: rgba(184,149,42,0.07);
+  border: 1px solid rgba(184,149,42,0.15);
+  color: var(--ash);
+  font-size: 11px; padding: 4px 10px;
+  border-radius: 20px; cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.18s;
+}
+.demo-prompt-btn:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(184,149,42,0.12); }
+
+/* ── PRICING SECTION ── */
+.pricing-section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 48px 80px;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 48px;
+}
+.pricing-card {
+  background: var(--ink-mid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+  transition: all 0.22s;
+}
+.pricing-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+.pricing-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(160deg, rgba(184,149,42,0.06) 0%, var(--ink-mid) 60%);
+}
+.pricing-featured-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 16px; border-radius: 20px;
+}
+.pricing-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500;
+  color: var(--white); margin-bottom: 6px;
+}
+.pricing-desc { font-size: 13px; color: var(--ash); margin-bottom: 24px; }
+.pricing-price {
+  font-family: var(--font-display);
+  font-size: 48px; font-weight: 600;
+  color: var(--gold-light); line-height: 1;
+  margin-bottom: 4px;
+}
+.pricing-price-note { font-size: 12px; color: var(--smoke); margin-bottom: 28px; }
+.pricing-features { list-style: none; margin-bottom: 28px; }
+.pricing-features li {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; color: var(--fog);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.pricing-features li::before { content: '✦'; color: var(--gold); font-size: 9px; margin-top: 4px; flex-shrink: 0; }
+.pricing-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--fog);
+  padding: 12px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.pricing-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+.pricing-card.featured .pricing-btn {
+  background: var(--gold); border-color: var(--gold);
+  color: var(--ink); font-weight: 600;
+}
+.pricing-card.featured .pricing-btn:hover { background: var(--gold-light); }
+
+/* ── CHECKOUT MODAL ── */
+.checkout-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(8,8,10,0.88);
+  backdrop-filter: blur(12px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.checkout-overlay.open { display: flex; }
+.checkout-modal {
+  background: var(--ink-mid);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 500px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+}
+.checkout-close {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--ash); width: 30px; height: 30px;
+  border-radius: 50%; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+}
+.checkout-close:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+.checkout-icon {
+  font-size: 36px; margin-bottom: 16px;
+  width: 64px; height: 64px;
+  background: var(--gold-glow);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.checkout-title {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 500;
+  color: var(--white); margin-bottom: 6px;
+}
+.checkout-sub { font-size: 13px; color: var(--ash); margin-bottom: 28px; line-height: 1.6; }
+.form-row { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--smoke); margin-bottom: 7px;
+}
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-strong);
+  color: var(--white);
+  padding: 11px 14px;
+  border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 14px;
+  outline: none; transition: border-color 0.18s;
+}
+.form-input:focus { border-color: var(--gold); }
+.form-row-half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.checkout-total {
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 20px; margin-bottom: 20px;
+}
+.checkout-total-label { font-size: 14px; color: var(--ash); }
+.checkout-total-price {
+  font-family: var(--font-display);
+  font-size: 30px; color: var(--gold-light); font-weight: 600;
+}
+.checkout-pay-btn {
+  width: 100%;
+  background: var(--gold);
+  border: none; color: var(--ink);
+  padding: 14px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.checkout-pay-btn:hover { background: var(--gold-light); box-shadow: 0 6px 24px rgba(184,149,42,0.35); }
+.checkout-secure { font-size: 11px; color: var(--smoke); text-align: center; margin-top: 12px; }
+
+/* ── SUCCESS SCREEN ── */
+.success-screen {
+  display: none; text-align: center;
+}
+.success-screen.show { display: block; }
+.checkout-form-screen.hide { display: none; }
+.success-anim { font-size: 56px; margin-bottom: 16px; animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+.success-title { font-family: var(--font-display); font-size: 28px; color: var(--white); margin-bottom: 10px; }
+.success-msg { font-size: 14px; color: var(--ash); line-height: 1.7; margin-bottom: 24px; }
+.success-key {
+  background: var(--ink);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px; color: var(--gold-light);
+  margin-bottom: 20px; word-break: break-all;
+}
+.success-close-btn {
+  background: var(--gold); border: none; color: var(--ink);
+  padding: 12px 28px; border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.success-close-btn:hover { background: var(--gold-light); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-logo { font-family: var(--font-display); font-size: 18px; color: var(--fog); }
+.footer-logo span { color: var(--gold-light); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 12px; color: var(--smoke); text-decoration: none; transition: color 0.18s; }
+.footer-links a:hover { color: var(--fog); }
+.footer-note { font-size: 11px; color: var(--graphite); max-width: 400px; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  header { padding: 0 20px; }
+  .hero { padding: 60px 20px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-right { display: none; }
+  .agents-section, .pricing-section { padding: 48px 20px; }
+  .agent-body-inner { grid-template-columns: 1fr; }
+  .agent-desc-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .trust-bar { padding: 16px 20px; gap: 20px; }
+  footer { padding: 28px 20px; flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#">
+    <div class="logo-mark">L</div>
+    <div>
+      <div class="logo-name">Lex<span>Core</span></div>
+      <div class="logo-sub">Legal AI Platform</div>
+    </div>
+  </a>
+  <nav>
+    <a href="#agents">Agents</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Docs</a>
+    <a href="#pricing" class="nav-cta">Get Started</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-texture"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">For Solo & Small Legal Firms</div>
+      <h1>Your firm.<br/><em>Amplified</em> by AI.</h1>
+      <p class="hero-desc">Five specialized AI agents — trained for legal work — that review contracts, research case law, check compliance, draft NDAs, and summarize billing. Each one works right now, in your browser.</p>
+      <div class="hero-actions">
+        <a href="#agents" class="btn-gold">Try an Agent Live →</a>
+        <a href="#pricing" class="btn-ghost">See Pricing</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card-stack">
+        <div class="hero-stat-card">
+          <div class="stat-card-icon">⚖️</div>
+          <div class="stat-card-val"><span>78%</span></div>
+          <div class="stat-card-label">Contract review time saved</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" style="width:78%"></div></div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="stat-card-icon">🔍</div>
+          <div class="stat-card-val"><span>4.2x</span></div>
+          <div class="stat-card-label">Faster case law research</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" style="width:85%"></div></div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="stat-card-icon">📄</div>
+          <div class="stat-card-val"><span>$79</span></div>
+          <div class="stat-card-label">One-time per agent. No subscriptions.</div>
+          <div class="stat-card-bar"><div class="stat-card-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="trust-dot">✦</span> <strong>No subscription.</strong> One-time fee per agent.</div>
+  <div class="trust-item"><span class="trust-dot">✦</span> <strong>Works instantly.</strong> Live demo before you buy.</div>
+  <div class="trust-item"><span class="trust-dot">✦</span> <strong>Built for solo firms.</strong> No IT setup required.</div>
+  <div class="trust-item"><span class="trust-dot">✦</span> <strong>Powered by Claude.</strong> Anthropic's enterprise AI.</div>
+</div>
+
+<!-- AGENTS -->
+<section class="agents-section" id="agents">
+  <div class="section-header">
+    <div class="section-eyebrow">Five Agents</div>
+    <div class="section-title">Try each one <em>live</em><br/>before you buy.</div>
+    <div class="section-sub">Click any agent to expand it and chat with it directly. No signup required for the demo.</div>
+  </div>
+  <div class="agents-list" id="agentsList"></div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="section-header">
+    <div class="section-eyebrow">Pricing</div>
+    <div class="section-title">Simple. <em>One-time.</em><br/>No surprises.</div>
+    <div class="section-sub">Pay once, own it. No monthly fees, no usage caps on what you've deployed.</div>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Single Agent</div>
+      <div class="pricing-desc">One agent of your choice, deployed and ready.</div>
+      <div class="pricing-price">$79</div>
+      <div class="pricing-price-note">one-time · lifetime access</div>
+      <ul class="pricing-features">
+        <li>1 agent of your choice</li>
+        <li>Unlimited usage on your deployment</li>
+        <li>Email setup support</li>
+        <li>Future updates included</li>
+      </ul>
+      <button class="pricing-btn" onclick="openCheckout('Single Agent', 79)">Buy One Agent</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-featured-badge">Most Popular</div>
+      <div class="pricing-name">Full Suite</div>
+      <div class="pricing-desc">All five agents. Everything your firm needs.</div>
+      <div class="pricing-price">$299</div>
+      <div class="pricing-price-note">one-time · save $96 vs. buying separately</div>
+      <ul class="pricing-features">
+        <li>All 5 legal agents</li>
+        <li>Contract Reviewer + Case Researcher</li>
+        <li>Compliance Checker + NDA Drafter</li>
+        <li>Billing Summarizer</li>
+        <li>Priority email support</li>
+        <li>Future agents at 50% off</li>
+      </ul>
+      <button class="pricing-btn" onclick="openCheckout('Full Suite — All 5 Agents', 299)">Get the Full Suite</button>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Firm License</div>
+      <div class="pricing-desc">Multiple attorneys, shared deployment, custom setup.</div>
+      <div class="pricing-price">$599</div>
+      <div class="pricing-price-note">one-time · up to 10 seats</div>
+      <ul class="pricing-features">
+        <li>All 5 agents</li>
+        <li>Up to 10 attorney seats</li>
+        <li>Custom firm branding</li>
+        <li>Onboarding call included</li>
+        <li>Dedicated support channel</li>
+        <li>API access for integration</li>
+      </ul>
+      <button class="pricing-btn" onclick="openCheckout('Firm License', 599)">Get Firm License</button>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <button class="checkout-close" onclick="closeCheckout()">✕</button>
+    <div class="checkout-form-screen" id="checkoutFormScreen">
+      <div class="checkout-icon" id="checkoutIcon">⚖️</div>
+      <div class="checkout-title" id="checkoutTitle">Complete Purchase</div>
+      <div class="checkout-sub" id="checkoutSub">You're one step away from deploying your legal AI agents.</div>
+      <div class="form-row">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" placeholder="Jane Smith" id="buyerName"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="jane@smithlaw.com" id="buyerEmail"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Firm Name (optional)</label>
+        <input class="form-input" placeholder="Smith & Associates" id="buyerFirm"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Card Number</label>
+        <input class="form-input" placeholder="4242 4242 4242 4242" id="cardNum" maxlength="19" oninput="formatCard(this)"/>
+      </div>
+      <div class="form-row form-row-half">
+        <div>
+          <label class="form-label">Expiry</label>
+          <input class="form-input" placeholder="MM / YY" id="cardExp" maxlength="7" oninput="formatExp(this)"/>
+        </div>
+        <div>
+          <label class="form-label">CVV</label>
+          <input class="form-input" placeholder="•••" id="cardCvv" maxlength="4"/>
+        </div>
+      </div>
+      <div class="checkout-total">
+        <div class="checkout-total-label">Total Due Today</div>
+        <div class="checkout-total-price" id="checkoutPrice">$79</div>
+      </div>
+      <button class="checkout-pay-btn" onclick="processPurchase()">🔒 Complete Purchase</button>
+      <div class="checkout-secure">🔐 Secure checkout · Your data is encrypted · No recurring charges</div>
+    </div>
+    <div class="success-screen" id="successScreen">
+      <div class="success-anim">🎉</div>
+      <div class="success-title">You're all set.</div>
+      <div class="success-msg">Your purchase is confirmed. Your agent access key has been sent to <strong id="successEmail">your email</strong>. Setup instructions are included.</div>
+      <div class="success-key" id="successKey">LEXCORE-XXXX-XXXX-XXXX</div>
+      <button class="success-close-btn" onclick="closeCheckout()">Back to LexCore</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Lex<span>Core</span></div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Support</a>
+    <a href="#">Docs</a>
+  </div>
+  <div class="footer-note">LexCore agents are AI assistants and do not constitute legal advice. Always consult a licensed attorney for legal decisions.</div>
+</footer>
+
+<script>
+// ═══════════════════════════════
+// YOUR API KEY
+// ═══════════════════════════════
+const API_KEY = "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";
+
+// ═══════════════════════════════
+// AGENT DEFINITIONS
+// ═══════════════════════════════
+const agents = [
+  {
+    id: "contract",
+    icon: "📋",
+    name: "Contract Reviewer",
+    tagline: "Paste any contract. Get a risk summary in seconds.",
+    price: "$79",
+    description: "Upload or paste any contract and this agent will identify risky clauses, flag one-sided terms, summarize key obligations, and highlight anything that needs your attention — in plain English, not legalese.",
+    capabilities: ["Risk clause detection", "Plain-English summaries", "Obligation mapping", "Red flag alerts", "Jurisdiction awareness"],
+    prompts: ["Flag any risky clauses in this NDA", "What are my obligations in this contract?", "Is this indemnification clause standard?"],
+    systemPrompt: `You are a highly experienced contract review attorney AI assistant for LexCore, a legal AI platform for solo and small law firms. 
+
+Your job is to help attorneys quickly identify risks, obligations, and red flags in contracts.
+
+When reviewing contracts or clauses:
+- Identify and explain risky or one-sided terms clearly
+- Flag unusual or non-standard clauses
+- Summarize key obligations for each party
+- Use plain English, not dense legalese
+- Be concise but thorough
+- Always note: "This is AI analysis, not legal advice. Review with your attorney."
+
+If someone pastes contract text, analyze it directly. If they ask a general question, answer it helpfully and practically.`
+  },
+  {
+    id: "researcher",
+    icon: "🔍",
+    name: "Case Researcher",
+    tagline: "Ask about case law, precedents, and legal principles.",
+    price: "$79",
+    description: "Ask about relevant case law, legal precedents, statutory interpretations, and legal principles across practice areas. Get structured research summaries with citations you can verify — in a fraction of the time.",
+    capabilities: ["Case law synthesis", "Precedent analysis", "Statutory interpretation", "Jurisdiction-aware answers", "Citation summaries"],
+    prompts: ["What's the standard for promissory estoppel?", "Key cases on non-compete enforceability", "Summary judgment standard in federal court"],
+    systemPrompt: `You are a senior legal research attorney AI for LexCore, specializing in case law research for solo and small law firms.
+
+Your job is to help attorneys find and understand relevant case law, legal precedents, and statutory interpretations.
+
+When answering research questions:
+- Provide relevant case names, jurisdictions, and holdings
+- Explain the legal principles clearly
+- Note circuit splits or jurisdictional variations when relevant
+- Organize answers clearly with key takeaways first
+- Always recommend verifying citations through Westlaw or LexisNexis
+- Be thorough but scannable — attorneys need to act quickly
+
+Note: Always remind users to verify citations independently as your knowledge has a training cutoff.`
+  },
+  {
+    id: "compliance",
+    icon: "✅",
+    name: "Compliance Checker",
+    tagline: "Check documents and practices against key regulations.",
+    price: "$79",
+    description: "Describe a business practice, paste a policy, or ask about a regulatory requirement. The agent checks it against relevant regulations — GDPR, HIPAA, ADA, CCPA, employment law, and more — and flags gaps.",
+    capabilities: ["GDPR & CCPA analysis", "HIPAA compliance checks", "Employment law review", "Policy gap detection", "Regulatory summaries"],
+    prompts: ["Does this privacy policy meet GDPR requirements?", "Is this employee handbook clause legal?", "What does CCPA require for data deletion?"],
+    systemPrompt: `You are a regulatory compliance attorney AI for LexCore, helping solo and small law firms advise clients on compliance matters.
+
+Your expertise covers: GDPR, CCPA, HIPAA, ADA, FCRA, employment law (FLSA, Title VII, FMLA), corporate governance, and general business regulatory compliance.
+
+When checking compliance:
+- Identify which regulations apply to the situation described
+- Flag specific gaps or violations clearly
+- Explain what changes would bring them into compliance
+- Prioritize issues by severity (critical / moderate / minor)
+- Be practical and actionable, not just theoretical
+- Always note that a full compliance review requires qualified legal counsel`
+  },
+  {
+    id: "nda",
+    icon: "📝",
+    name: "NDA Drafter",
+    tagline: "Describe the deal. Get a complete NDA draft instantly.",
+    price: "$79",
+    description: "Tell the agent who the parties are, what's being protected, and any special terms. It generates a complete, professional mutual or one-way NDA — ready to review, edit, and send. Saves 45–90 minutes per NDA.",
+    capabilities: ["Mutual & one-way NDAs", "Custom confidentiality scope", "Term & termination clauses", "Governing law options", "Editable Word-ready output"],
+    prompts: ["Draft a mutual NDA for a software partnership", "One-way NDA: I'm sharing my business idea with a contractor", "NDA for hiring a freelance designer in California"],
+    systemPrompt: `You are a transactional attorney AI for LexCore, specializing in drafting Non-Disclosure Agreements (NDAs) for solo and small law firms.
+
+When asked to draft an NDA:
+1. Ask for any missing key details: parties, mutual vs. one-way, state/governing law, confidentiality scope, duration
+2. Draft a complete, professional NDA with all standard clauses
+3. Format it clearly with numbered sections
+4. Include: Definition of Confidential Information, Obligations, Exclusions, Term, Return/Destruction, Remedies, Governing Law, Entire Agreement
+
+Use clean, professional legal language appropriate for a small business or professional services context. After drafting, note which clauses the attorney may want to customize.
+
+Always note: "This draft is a starting point. Have a licensed attorney review before sending."`
+  },
+  {
+    id: "billing",
+    icon: "💰",
+    name: "Billing Summarizer",
+    tagline: "Turn raw time entries into polished client invoices.",
+    price: "$79",
+    description: "Paste your raw time log entries and the agent rewrites them into professional, client-friendly billing narratives — clear, credible, and appropriately detailed. Reduces write-offs and client disputes.",
+    capabilities: ["Time entry rewriting", "Professional narrative tone", "Matter grouping", "Billing best practices", "Dispute-resistant language"],
+    prompts: ["Rewrite these time entries for a client invoice", "Make this billing entry more professional", "Draft a billing narrative for contract review work"],
+    systemPrompt: `You are a legal billing specialist AI for LexCore, helping solo and small law firms write professional, clear, and dispute-resistant billing narratives.
+
+Your job is to take raw attorney time entries and rewrite them into polished, professional billing descriptions that:
+- Clearly describe the work performed
+- Use professional billing language attorneys and clients expect
+- Are specific enough to justify the time, but not overly detailed
+- Group related tasks logically when appropriate
+- Reduce the chance of client billing disputes
+- Follow ABA billing guidelines and best practices
+
+When given raw time entries, rewrite each one professionally. Also offer to group related entries by matter or date if the attorney provides multiple entries.
+
+Format output as:
+Date | Timekeeper | Hours | Professional Description`
+  }
+];
+
+// ═══════════════════════════════
+// RENDER AGENTS
+// ═══════════════════════════════
+function renderAgents() {
+  const list = document.getElementById('agentsList');
+  list.innerHTML = agents.map((a, i) => `
+    <div class="agent-row" id="row-${a.id}">
+      <div class="agent-header" onclick="toggleAgent('${a.id}')">
+        <div class="agent-num">
+          <div class="agent-num-big">0${i+1}</div>
+        </div>
+        <div class="agent-info">
+          <div class="agent-name">${a.icon} ${a.name}</div>
+          <div class="agent-tagline">${a.tagline}</div>
+        </div>
+        <div class="agent-price-wrap">
+          <div class="agent-price">${a.price}</div>
+          <div class="agent-price-note">one-time</div>
+        </div>
+        <div class="agent-toggle">+</div>
+      </div>
+      <div class="agent-body">
+        <div class="agent-body-inner">
+          <div class="agent-desc-col">
+            <div class="col-label">About This Agent</div>
+            <div class="agent-desc-text">${a.description}</div>
+            <div class="agent-caps">${a.capabilities.map(c => `<span class="cap">${c}</span>`).join('')}</div>
+            <button class="agent-buy-btn" onclick="openCheckout('${a.name}', 79)">
+              Purchase This Agent — $79 →
+            </button>
+          </div>
+          <div class="agent-demo-col">
+            <div class="col-label">Live Demo — Try It Now</div>
+            <div class="demo-chat" id="chat-${a.id}">
+              <div class="demo-chat-header">
+                <div class="demo-dot"></div>
+                <div class="demo-chat-title">${a.name} · Powered by Claude</div>
+              </div>
+              <div class="demo-prompts">
+                ${a.prompts.map(p => `<button class="demo-prompt-btn" onclick="sendPrompt('${a.id}', \`${p}\`)">${p}</button>`).join('')}
+              </div>
+              <div class="demo-messages" id="msgs-${a.id}">
+                <div class="msg msg-agent">Hi! I'm the ${a.name}. ${a.prompts[0] ? `Try asking: "<em>${a.prompts[0]}</em>"` : 'Ask me anything.'} This is a live demo powered by Claude.</div>
+              </div>
+              <div class="demo-input-row">
+                <input class="demo-input" id="input-${a.id}" placeholder="Ask this agent anything…" onkeydown="if(event.key==='Enter')sendMsg('${a.id}')"/>
+                <button class="demo-send" id="send-${a.id}" onclick="sendMsg('${a.id}')">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAgent(id) {
+  const row = document.getElementById(`row-${id}`);
+  const isOpen = row.classList.contains('expanded');
+  document.querySelectorAll('.agent-row').forEach(r => r.classList.remove('expanded'));
+  if (!isOpen) row.classList.add('expanded');
+}
+
+// ═══════════════════════════════
+// LIVE CLAUDE DEMO
+// ═══════════════════════════════
+const histories = {};
+
+async function sendMsg(agentId) {
+  const input = document.getElementById(`input-${agentId}`);
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await runDemo(agentId, text);
+}
+
+async function sendPrompt(agentId, prompt) {
+  const row = document.getElementById(`row-${agentId}`);
+  if (!row.classList.contains('expanded')) row.classList.add('expanded');
+  await runDemo(agentId, prompt);
+}
+
+async function runDemo(agentId, userText) {
+  const agent = agents.find(a => a.id === agentId);
+  const msgsEl = document.getElementById(`msgs-${agentId}`);
+  const sendBtn = document.getElementById(`send-${agentId}`);
+
+  if (!histories[agentId]) histories[agentId] = [];
+  histories[agentId].push({ role: 'user', content: userText });
+
+  // User bubble
+  msgsEl.innerHTML += `<div class="msg msg-user">${escHtml(userText)}</div>`;
+
+  // Typing indicator
+  const typingId = `typing-${agentId}-${Date.now()}`;
+  msgsEl.innerHTML += `<div class="msg msg-agent msg-typing" id="${typingId}">
+    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+  </div>`;
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  sendBtn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1000,
+        system: agent.systemPrompt,
+        messages: histories[agentId]
+      })
+    });
+
+    const data = await res.json();
+    const reply = data?.content?.[0]?.text || "I'm having trouble responding right now. Please try again.";
+    histories[agentId].push({ role: 'assistant', content: reply });
+
+    document.getElementById(typingId)?.remove();
+    msgsEl.innerHTML += `<div class="msg msg-agent">${formatReply(reply)}</div>`;
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    msgsEl.innerHTML += `<div class="msg msg-agent">⚠️ Connection error. Please check your network and try again.</div>`;
+  }
+
+  sendBtn.disabled = false;
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function formatReply(t) {
+  return escHtml(t)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br/>');
+}
+
+// ═══════════════════════════════
+// CHECKOUT
+// ═══════════════════════════════
+let checkoutItem = '';
+let checkoutAmt = 0;
+
+function openCheckout(item, amount) {
+  checkoutItem = item;
+  checkoutAmt = amount;
+  document.getElementById('checkoutTitle').textContent = `Purchase: ${item}`;
+  document.getElementById('checkoutSub').textContent = `One-time payment · Lifetime access · No recurring charges`;
+  document.getElementById('checkoutPrice').textContent = `$${amount}`;
+  document.getElementById('checkoutFormScreen').classList.remove('hide');
+  document.getElementById('successScreen').classList.remove('show');
+  document.getElementById('checkoutOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function formatCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+function formatExp(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+  el.value = v;
+}
+
+function processPurchase() {
+  const name = document.getElementById('buyerName').value.trim();
+  const email = document.getElementById('buyerEmail').value.trim();
+  if (!name || !email) { alert('Please enter your name and email.'); return; }
+
+  // Generate a fake access key for demo
+  const key = 'LEXCORE-' + Math.random().toString(36).substring(2,6).toUpperCase() + '-' +
+    Math.random().toString(36).substring(2,6).toUpperCase() + '-' +
+    Math.random().toString(36).substring(2,6).toUpperCase();
+
+  document.getElementById('successEmail').textContent = email;
+  document.getElementById('successKey').textContent = key;
+  document.getElementById('checkoutFormScreen').classList.add('hide');
+  document.getElementById('successScreen').classList.add('show');
+}
+
+document.getElementById('checkoutOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeCheckout();
+});
+
+// ── INIT ──
+renderAgents();
+</script>
+</body>
+</html>
